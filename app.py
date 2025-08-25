@@ -28,7 +28,7 @@ appointment_services = db.Table('appointment_services',
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
-    password_hash = db.Column(db.String(150), nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
     role = db.Column(db.String(50), nullable=False, default='customer')
     full_name = db.Column(db.String(150), nullable=True)
     phone_number = db.Column(db.String(20), nullable=True)
@@ -361,4 +361,5 @@ def add_appointment_for_customer():
 
 # --- UYGULAMAYI ÇALIŞTIRMA ---
 if __name__ == '__main__':
+
     app.run(debug=True)
