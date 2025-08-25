@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <div class="card-header"><h3>Kayıtlı Müşteriler</h3></div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Kullanıcı Adı</th>
+                    <th>İsim Soyisim</th>
+                    <th>Telefon Numarası</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in customers %}
+                <tr>
+                    <td>{{ customer.username }}</td>
+                    <td>{{ customer.full_name }}</td>
+                    <td>{{ customer.phone_number }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

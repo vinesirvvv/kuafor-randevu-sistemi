@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <div class="card-header"><h3>Sistem Hareket Kayıtları</h3></div>
+    <div class="card-body">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Zaman</th>
+                    <th>Yapan Kişi</th>
+                    <th>Eylem</th>
+                    <th>Detay</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.timestamp.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                    <td>{{ log.actor.username }} ({{ log.actor.role }})</td>
+                    <td>{{ log.action }}</td>
+                    <td>{{ log.details }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

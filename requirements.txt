@@ -1,0 +1,7 @@
+click
+Flask
+Flask-Login
+Flask-SQLAlchemy
+gunicorn
+psycopg2-binary
+Werkzeug

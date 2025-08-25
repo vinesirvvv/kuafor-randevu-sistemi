@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <div class="card-header"><h3>Müşteri Adına Randevu Oluştur</h3></div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('add_appointment_for_customer') }}">
+            <div class="mb-3">
+                <label for="customer_id" class="form-label">Müşteri Seçin</label>
+                <select class="form-select" id="customer_id" name="customer_id" required>
+                    {% for customer in customers %}
+                        <option value="{{ customer.id }}">{{ customer.username }} ({{ customer.full_name }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="date" class="form-label">Tarih</label>
+                <input type="date" class="form-control" id="date" name="date" required>
+            </div>
+             <div class="mb-3">
+                <label for="time" class="form-label">Saat (Örn: 14:00)</label>
+                <input type="time" class="form-control" id="time" name="time" step="3600" min="09:00" max="20:00" required>
+                 <small class="form-text text-muted">Sadece saat başları (09:00, 10:00 vb.) seçilebilir.</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Randevuyu Oluştur</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

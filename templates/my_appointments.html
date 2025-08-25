@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <div class="card-header"><h3>Aktif Randevularım</h3></div>
+    <div class="card-body">
+        {% if appointments %}
+            <ul class="list-group list-group-flush mt-3">
+                {% for appt in appointments %}
+                <li class="list-group-item">
+                     <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ appt.appointment_datetime.strftime('%d %B %Y - Saat: %H:%M') }}</strong> ({{ appt.total_duration }} dk)
+                            <br>
+                            <small class="text-muted">
+                                Hizmetler: {% for service in appt.services %}{{ service.name }}{% if not loop.last %}, {% endif %}{% endfor %}
+                                / Stilist: {{ appt.staff.full_name }}
+                            </small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <strong class="me-3">{{ "%.2f"|format(appt.final_price) }} ₺</strong>
+                            <form action="{{ url_for('cancel_my_appointment', appointment_id=appt.id) }}" method="POST">
+                                <button type="submit" class="btn btn-warning btn-sm" onclick="return confirm('Bu randevuyu iptal etmek istediğinizden emin misiniz?')">İptal Et</button>
+                            </form>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-center text-muted">Aktif randevunuz bulunmamaktadır.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

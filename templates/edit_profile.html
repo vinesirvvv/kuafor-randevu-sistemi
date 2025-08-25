@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <div class="card-header"><h3>Profilimi Düzenle</h3></div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('edit_profile') }}" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="profile_picture" class="form-label">Profil Resmi</label>
+                <input class="form-control" type="file" id="profile_picture" name="profile_picture" accept="image/*">
+                <small class="text-muted">Mevcut resminizi değiştirmek için yeni bir dosya seçin.</small>
+            </div>
+            <div class="mb-3">
+                <label for="bio" class="form-label">Hakkımda (Biyografi)</label>
+                <textarea class="form-control" id="bio" name="bio" rows="4" placeholder="Kendinizden ve uzmanlık alanlarınızdan bahsedin...">{{ current_user.bio or '' }}</textarea>
+            </div>
+            <hr>
+            <div class="mb-3">
+                <label for="gallery_images" class="form-label">Galeriye Yeni Resimler Ekle</label>
+                <input class="form-control" type="file" id="gallery_images" name="gallery_images" accept="image/*" multiple>
+                <small class="text-muted">Birden fazla resim seçebilirsiniz.</small>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Profili Güncelle</button>
+        </form>
+    </div>
+</div>
+<div class="card mt-4">
+    <div class="card-header"><h3>Galerim</h3></div>
+    <div class="card-body">
+        <div class="row">
+            {% for image in current_user.gallery_images %}
+            <div class="col-md-3 mb-3">
+                <div class="position-relative">
+                    <img src="{{ url_for('static', filename='uploads/' + image.image_filename) }}" class="img-fluid rounded" alt="Galeri Resmi">
+                    <form action="{{ url_for('delete_gallery_image', image_id=image.id) }}" method="POST" class="position-absolute top-0 end-0 p-1">
+                        <button type="submit" class="btn btn-danger btn-sm rounded-circle" onclick="return confirm('Bu resmi silmek istediğinizden emin misiniz?')">&times;</button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-muted">Galerinizde henüz resim yok.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

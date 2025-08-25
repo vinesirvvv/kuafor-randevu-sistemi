@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <div class="card-header"><h3>Promosyon Kodu Ekle</h3></div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('manage_promotions') }}">
+            <div class="row">
+                <div class="col-md-3 mb-3"><label for="code" class="form-label">Promosyon Kodu</label><input type="text" class="form-control" name="code" placeholder="YAZA25" required></div>
+                <div class="col-md-4 mb-3"><label for="description" class="form-label">Açıklama</label><input type="text" class="form-control" name="description" placeholder="Yaza Özel %25 İndirim" required></div>
+                <div class="col-md-2 mb-3"><label for="discount" class="form-label">İndirim Oranı (%)</label><input type="number" class="form-control" name="discount" placeholder="25" required></div>
+                <div class="col-md-2 mb-3"><label for="expiration_date" class="form-label">Son Geçerlilik</label><input type="date" class="form-control" name="expiration_date"></div>
+                <div class="col-md-1 d-flex align-items-end mb-3"><button type="submit" class="btn btn-primary w-100">Ekle</button></div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="card mt-4">
+    <div class="card-header"><h3>Mevcut Promosyonlar</h3></div>
+    <div class="card-body">
+        <ul class="list-group list-group-flush">
+            {% for promo in promotions %}
+            <li class="list-group-item">
+                <strong>{{ promo.code }}</strong> - {{ promo.description }} (%{{ promo.discount_percentage }})
+                <small class="text-muted d-block">
+                    {% if promo.expiration_date %}Son Geçerlilik: {{ promo.expiration_date.strftime('%d-%m-%Y') }}{% endif %}
+                    - Durum: {% if promo.is_active %}Aktif{% else %}Pasif{% endif %}
+                </small>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

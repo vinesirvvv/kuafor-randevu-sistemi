@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <div class="card-header"><h3>Randevu Al</h3></div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('book_appointment') }}" id="bookingForm">
+            <div class="mb-3">
+                <label class="form-label">1. Adım: Tarih Seçin</label>
+                <input type="date" class="form-control" name="selected_date_display" value="{{ selected_date.strftime('%Y-%m-%d') }}" onchange="document.getElementById('dateSelectForm').submit()">
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">2. Adım: Hizmetleri Seçin</label>
+                <div class="service-list border rounded p-3" style="max-height: 150px; overflow-y: auto;">
+                    {% for service in services %}
+                    <div class="form-check">
+                        <input class="form-check-input service-checkbox" type="checkbox" name="service_ids" value="{{ service.id }}" id="service{{ service.id }}" data-duration="{{ service.duration_minutes }}" data-price="{{ service.price }}">
+                        <label class="form-check-label" for="service{{ service.id }}">{{ service.name }} ({{ service.duration_minutes }} dk, {{ service.price }} ₺)</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="staff_id" class="form-label">3. Adım: Stilist Seçin</label>
+                <select class="form-select" name="staff_id" id="staff_id" required>
+                    <option value="" disabled selected>Lütfen bir stilist seçin...</option>
+                    {% for stylist in stylists %}<option value="{{ stylist.id }}">{{ stylist.full_name }}</option>{% endfor %}
+                </select>
+            </div>
+            
+            <div class="alert alert-info text-center">
+                Toplam Süre: <strong id="totalDuration">0</strong> Dakika | Toplam Tutar: <strong id="totalPrice">0.00</strong> ₺
+            </div>
+
+            <h5 class="mt-4">4. Adım: Müsait Başlangıç Saatini Seçin</h5><hr>
+            <div id="time-slots" class="d-grid gap-2 d-md-flex flex-wrap">
+                {% for slot in all_slots %}
+                    <button type="button" class="btn btn-secondary time-slot-btn" disabled data-time="{{ slot.strftime('%H:%M:%S') }}">{{ slot.strftime('%H:%M') }}</button>
+                {% endfor %}
+            </div>
+            
+            <input type="hidden" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}">
+            <input type="hidden" name="time" id="selected_time">
+        </form>
+        <form method="POST" action="{{ url_for('customer_dashboard') }}" id="dateSelectForm" class="d-none">
+             <input type="date" name="selected_date_display">
+        </form>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const serviceCheckboxes = document.querySelectorAll('.service-checkbox');
+    const totalDurationSpan = document.getElementById('totalDuration');
+    const totalPriceSpan = document.getElementById('totalPrice');
+    const timeSlots = document.querySelectorAll('.time-slot-btn');
+    const bookingForm = document.getElementById('bookingForm');
+    const selectedTimeInput = document.getElementById('selected_time');
+    const slotDuration = {{ slot_duration }};
+    const bookedSlots = {{ booked_slots | tojson }};
+    const allSlots = Array.from(timeSlots).map(btn => btn.dataset.time);
+
+    function updateTotalsAndAvailability() {
+        let totalDuration = 0;
+        let totalPrice = 0;
+        serviceCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                totalDuration += parseInt(checkbox.dataset.duration);
+                totalPrice += parseFloat(checkbox.dataset.price);
+            }
+        });
+        totalDurationSpan.textContent = totalDuration;
+        totalPriceSpan.textContent = totalPrice.toFixed(2);
+
+        if (totalDuration === 0) {
+            timeSlots.forEach(btn => { btn.disabled = true; btn.className = 'btn btn-secondary time-slot-btn'; });
+            return;
+        }
+
+        const neededSlotsCount = Math.ceil(totalDuration / slotDuration);
+
+        timeSlots.forEach((btn, index) => {
+            let isAvailable = true;
+            if (index + neededSlotsCount > allSlots.length) {
+                isAvailable = false;
+            } else {
+                for (let i = 0; i < neededSlotsCount; i++) {
+                    const slotToCheck = allSlots[index + i];
+                    if (bookedSlots.includes(slotToCheck)) {
+                        isAvailable = false;
+                        break;
+                    }
+                }
+            }
+            btn.disabled = !isAvailable;
+            btn.className = isAvailable ? 'btn btn-success time-slot-btn' : 'btn btn-secondary time-slot-btn';
+        });
+    }
+
+    serviceCheckboxes.forEach(checkbox => checkbox.addEventListener('change', updateTotalsAndAvailability));
+    timeSlots.forEach(button => {
+        button.addEventListener('click', function() {
+            if (!document.getElementById('staff_id').value || totalDurationSpan.textContent === '0') {
+                alert('Lütfen hizmet ve stilist seçin!'); return;
+            }
+            selectedTimeInput.value = this.dataset.time;
+            bookingForm.submit();
+        });
+    });
+    
+    const mainDateInput = document.querySelector('input[name="selected_date_display"]');
+    const formDateInput = document.querySelector('#dateSelectForm input[name="selected_date_display"]');
+    mainDateInput.addEventListener('change', function() {
+        formDateInput.value = this.value;
+        document.getElementById('dateSelectForm').submit();
+    });
+
+    updateTotalsAndAvailability();
+});
+</script>
+{% endblock %}

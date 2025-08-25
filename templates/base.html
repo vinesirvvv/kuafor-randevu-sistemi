@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuaför Randevu Sistemi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root { --background-color: #f4f1eb; --text-color: #4a4a4a; --primary-color: #bfa89e; --card-background: #ffffff; --border-color: #e0e0e0; }
+        body, html { height: 100%; }
+        body { font-family: 'Montserrat', sans-serif; font-weight: 300; background-color: var(--background-color); color: var(--text-color); padding-bottom: 80px; }
+        h1, h2, h3, h4, h5, .navbar-brand { font-family: 'Playfair Display', serif; color: var(--text-color); font-weight: 700; }
+        .navbar { background-color: var(--card-background) !important; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card { background-color: var(--card-background); border: 1px solid var(--border-color); border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.07); }
+        .card-header { background-color: transparent; border-bottom: 1px solid var(--border-color); }
+        .form-control, .form-select { background-color: #f8f9fa; border: 1px solid var(--border-color); }
+        .form-control:focus, .form-select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 0.25rem rgba(191, 168, 158, 0.25); }
+        .btn-primary, .btn-success { background-color: var(--primary-color); border-color: var(--primary-color); font-weight: 600; padding: 10px 20px; border-radius: 8px; }
+        .btn-primary:hover, .btn-success:hover { opacity: 0.9; background-color: var(--primary-color); border-color: var(--primary-color); }
+        .whatsapp-icon { position: fixed; bottom: 25px; right: 25px; z-index: 1000; background-color: #25D366; color: white !important; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 35px; text-decoration: none; box-shadow: 2px 2px 8px rgba(0,0,0,0.3); transition: transform 0.2s; }
+        .whatsapp-icon:hover { transform: scale(1.1); color: white; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('index') }}">Kuaför Randevu</a>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('stylists_list') }}">Ekibimiz</a></li>
+                {% if current_user.is_authenticated and current_user.role == 'customer' %}
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('my_appointments') }}">Randevularım</a></li>
+                {% endif %}
+                {% if current_user.is_authenticated and current_user.role == 'staff' %}
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('edit_profile') }}">Profilim</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('staff_dashboard') }}">Randevu Paneli</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('manage_services') }}">Hizmet Yönetimi</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('manage_promotions') }}">Promosyonlar</a></li>
+                {% endif %}
+            </ul>
+            {% if current_user.is_authenticated %}
+            <div class="d-flex align-items-center">
+                <span class="navbar-text me-3">Hoş geldin, {{ current_user.username }}</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary btn-sm">Çıkış Yap</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} mt-3" role="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+    <a href="https://wa.me/905310221619" class="whatsapp-icon" target="_blank" title="WhatsApp ile İletişime Geçin"><i class="fab fa-whatsapp"></i></a>
+</body>
+</html>

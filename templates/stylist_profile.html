@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <img src="{{ url_for('static', filename='uploads/' ~ stylist.profile_picture) }}" class="img-fluid rounded-circle mb-3" style="width: 200px; height: 200px; object-fit: cover;" alt="{{ stylist.full_name }}">
+                <h3>{{ stylist.full_name }}</h3>
+            </div>
+            <div class="col-md-8">
+                <h4>Hakkımda</h4>
+                <p>{{ stylist.bio or 'Bu stilist henüz bir biyografi eklememiş.' }}</p>
+                <a href="{{ url_for('customer_dashboard') }}" class="btn btn-primary">Hemen Randevu Al</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card mt-4">
+    <div class="card-header"><h4>Çalışmalarımdan Örnekler</h4></div>
+    <div class="card-body">
+        <div class="row">
+            {% for image in stylist.gallery_images %}
+            <div class="col-md-4 mb-3">
+                <img src="{{ url_for('static', filename='uploads/' ~ image.image_filename) }}" class="img-fluid rounded" alt="Galeri Resmi">
+            </div>
+            {% else %}
+            <p class="text-muted">Bu stilist henüz galerisine resim eklememiş.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
